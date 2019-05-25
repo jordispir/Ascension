@@ -10,8 +10,8 @@
 ****                                                        
 ****                                                      +  
 ****                                                      
-****     sssssssssss                                       
-****                                         FFFF        
+****     
+****    ssssssssss                            FFFF        
 ****                                        ssssssssssssssssssss           
 ****                               s                        **** 
 ****                               s                        ****

@@ -16,8 +16,8 @@
 ****ssssssss                                      s         **** 
 ****                                              s         ****
 ****         FFFF                              ssss         ****
-****         sssssssss                            s         ****
-****                  ssssssssssss                s         ****
+****         ssssssss                             s         ****
+****                 sssssssssssss                s         ****
 ****                                              s         ****
 ****                                              s         ****
 ****                                    PPP       s         ****
@@ -26,11 +26,11 @@
 ****      G       G                 ss                      ****
 ****      ssssssssssssssssssssssssssss                      ****
 ****                                                        ****
-****                                               V        ****
+****                                                V       ****
 ****                                                        ****
 ****                                                        ****
-****                                                 ss     ****
-****                                       FFFF    ssss     ****
+****                                                        ****
+****                                       FFFF             ****
 ****                                       ssssssssssss     ****
 ****                                    sss                 ****
 ****  P         G         G   PPP    sss                    ****
