@@ -10,8 +10,8 @@
                                          s        s         ****
      -                                   s        s         ****
                                          s        s         ****
-                             G     G     s        s         **** 
-                           sssssssssssssss        s         ****
+                           G       G     s        s         **** 
+                         sssssssssssssssss        s         ****
                                                   s         ****
 ****ssssssss                                      s         **** 
 ****                                              s         ****
@@ -26,15 +26,15 @@
 ****      G       G                 ss                      ****
 ****      ssssssssssssssssssssssssssss                      ****
 ****                                                        ****
-****                                             V          ****
+****                                               V        ****
+****                                                        ****
 ****                                                        ****
 ****                                                 ss     ****
-****                                       FFFF     sss     ****
+****                                       FFFF    ssss     ****
 ****                                       ssssssssssss     ****
 ****                                    sss                 ****
 ****  P         G         G   PPP    sss                    ****
 ****  sssssssssssssssssssssssssssssss                       ****
-****                                                        ****
 ****                                                        ****
 ****                                                        ****
 ****                                                        ****
