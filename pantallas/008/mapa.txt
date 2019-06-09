@@ -1,11 +1,10 @@
 ****************************************************************
 ****************************************************************
 ****                                                        ****
-****                  FFF    FFF   FFFF FFFF                ****
-****                  F  F  F   F  F    F                   ****
-****                  FFF   F   F  FFFF FFFF                ****
-****                  F  F  F   F     F    F                ****
-****                  FFFF   FFF   FFFF FFFF                ****
+****                                                        ****
+****                                                        ****
+****                                                        ****              
+****                                                        ****
 ****                                                        ****
 ****ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
                                                         
@@ -25,10 +24,11 @@
 ****                                                        ****
 ****                                                        ****
 ****                                                        ****
-****                                                        ****
-****                                                        ****              
-****                                                        ****
-****                                                        ****
+****                 FFF    FFF   FFFF FFFF                 ****
+****                 F  F  F   F  F    F                    ****
+****                 FFF   F   F  FFFF FFFF                 ****
+****                 F  F  F   F     F    F                 ****
+****                 FFFF   FFF   FFFF FFFF                 ****
 ****                                                        ****
 ****                                                        ****
 ****                                                        ****
