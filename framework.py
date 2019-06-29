@@ -160,9 +160,17 @@ class Menu:
         rutaFondo = tools.obtenPathDeRecurso ("menu", "fondoDefinitivo.jpg") 
         self.imagenFondo = pygame.image.load(rutaFondo)
 
+        #sonidoMenu
         directorio= tools.obtenPathDeRecurso("sonidos", "menu")
-        rutaSonido= tools.obtenPathDeRecurso(directorio, "SonidoEspada.wav")
-        self.sonido = pygame.mixer.Sound(rutaSonido)
+
+        rutaSonidoOpcion= tools.obtenPathDeRecurso(directorio, "SonidoEspada.wav")
+        rutaMusicaMenu= tools.obtenPathDeRecurso(directorio, "MusicaMenu.wav")
+
+        self.sonidoOpcion = pygame.mixer.Sound(rutaSonidoOpcion)
+        self.MusicaMenu = pygame.mixer.Sound(rutaMusicaMenu)
+
+    def sonidoMenu(self):
+       self.MusicaMenu.play()
 
     def gestionaEventos (self, eventos):
         for evento in eventos:
@@ -170,12 +178,12 @@ class Menu:
                 self.opcionElegida = Menu.O_SALIR
             elif evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_UP:
-                    self.sonido.play()
+                    self.sonidoOpcion.play()
                     self.seleccion -= 1
                     if self.seleccion == 0:
                         self.seleccion = Menu.O_SALIR
                 elif evento.key == pygame.K_DOWN:
-                    self.sonido.play()
+                    self.sonidoOpcion.play()
                     self.seleccion += 1
                     if self.seleccion > Menu.O_SALIR:
                         self.seleccion = Menu.O_PARTIDA_NUEVA
