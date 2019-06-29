@@ -1,5 +1,5 @@
-import pygame
 import tools
+import pygame
 import os
 
 class SpriteAnimado(pygame.sprite.Sprite):
@@ -213,6 +213,11 @@ class Partida:
         self.personaje = Personaje(90, 220, "personaje")
         self.barraEnergia = BarraEnergia()
         self.victoria = False
+        directorio= tools.obtenPathDeRecurso("sonidos", "partida")
+        rutaSonidoPaso= tools.obtenPathDeRecurso(directorio, "paso.wav")
+        rutaSonidoPincho = tools.obtenPathDeRecurso(directorio, "dañoPincho.wav")
+        self.sonidoPaso = pygame.mixer.Sound(rutaSonidoPaso)
+        self.sonidoDanyoPincho = pygame.mixer.Sound(rutaSonidoPincho)
 
     def esVictoria(self):
         return self.victoria
@@ -225,12 +230,18 @@ class Partida:
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_ESCAPE:
                     self.finPartida = True
-                elif evento.key == pygame.K_RIGHT:
-                    self.personaje.mueveDerecha()
-                elif evento.key == pygame.K_LEFT:
-                    self.personaje.mueveIzquierda()
-                elif evento.key == pygame.K_UP:
-                    self.personaje.salta()
+
+                else:
+
+                    if evento.key == pygame.K_RIGHT:
+                        """IMPORTANTE REVISAR"""
+                        self.sonidoPaso.play()
+                        self.personaje.mueveDerecha()
+                    elif evento.key == pygame.K_LEFT:
+                        self.sonidoPaso.play()
+                        self.personaje.mueveIzquierda()
+                    elif evento.key == pygame.K_UP:
+                        self.personaje.salta()
                 
             if evento.type == pygame.KEYUP:
                 if evento.key == pygame.K_RIGHT:
@@ -245,6 +256,7 @@ class Partida:
 
         herido = self.personaje.colisiona(pantalla.obtenEnemigos() )
         if herido:
+            self.sonidoDanyoPincho.play()
             self.personaje.modificaEnergia(-5)
             if self.personaje.obtenPorcentajeEnergia() <= 0:
                 self.finPartida = True
@@ -825,4 +837,6 @@ class PersonajeControlado(Personaje):
 
     def obtenLimiteDerecho(self):
         return self.limiteDerecho
+
+
 
