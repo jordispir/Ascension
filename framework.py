@@ -698,6 +698,10 @@ class Personaje:
         self.dibujo = self.animacionParado
         self.orientacion = Personaje.O_DERECHA
         self.energia = Personaje.C_ENERGIA_MAXIMA
+ #      directorio = tools.obtenPathDeRecurso(directorio, elemento)
+        directorio = tools.obtenPathDeRecurso("sonidos", "personaje")
+        rutaSonidoPaso = tools.obtenPathDeRecurso(directorio, "pasos.wav")
+        self.sonidoPaso = pygame.mixer.Sound()
 
     def colisiona(self, grupo):
         colisiones = self.motorColisiones.detectaSpriteConGrupo(self.dibujo, grupo)
@@ -825,4 +829,13 @@ class PersonajeControlado(Personaje):
 
     def obtenLimiteDerecho(self):
         return self.limiteDerecho
+
+class MotorDeSonido():
+    def __init__(self):
+       self.listaSonido = []
+
+
+
+    def anyadirSonido(self, sonido):
+        self.listaSonido.append(sonido)
 
