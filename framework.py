@@ -11,8 +11,9 @@ class SpriteAnimado(pygame.sprite.Sprite):
     
         for fichero in listaFicheros:
             rutaDibujo = tools.obtenPathDeRecurso(directorio, fichero)
-            dibujo = pygame.image.load(rutaDibujo)
-            self.dibujos.append(dibujo)
+            if rutaDibujo.endswith(".png"):
+                dibujo = pygame.image.load(rutaDibujo)
+                self.dibujos.append(dibujo)
         self.image = self.dibujos[0]
         self.rect = self.image.get_rect()
         self.rect.x = xInicial
@@ -81,8 +82,11 @@ class Juego:
     E_PARTIDA = 2
     E_RESULTADO = 3
     E_FIN = 4
+    motorDeSonido = None
 
     def __init__(self, ventana):
+        if Juego.motorDeSonido == None:
+            Juego.motorDeSonido = MotorDeSonido()
         self.estado = Juego.E_MENU
         self.menu = Menu(ventana)
         self.partida = Partida(ventana)
@@ -128,6 +132,7 @@ class Juego:
                 self.menu = Menu(self.ventana)
 
     def dibuja(self):
+        Juego.motorDeSonido.playSonidos()
         if self.estado == Juego.E_MENU:
             self.menu.dibuja()
         elif self.estado == Juego.E_PARTIDA:
@@ -221,11 +226,6 @@ class Partida:
         self.personaje = Personaje(90, 220, "personaje")
         self.barraEnergia = BarraEnergia()
         self.victoria = False
-        directorio= tools.obtenPathDeRecurso("sonidos", "partida")
-        rutaSonidoPaso= tools.obtenPathDeRecurso(directorio, "paso.wav")
-        rutaSonidoPincho = tools.obtenPathDeRecurso(directorio, "dañoPincho.wav")
-        self.sonidoPaso = pygame.mixer.Sound(rutaSonidoPaso)
-        self.sonidoDanyoPincho = pygame.mixer.Sound(rutaSonidoPincho)
 
     def esVictoria(self):
         return self.victoria
@@ -242,11 +242,8 @@ class Partida:
                 else:
 
                     if evento.key == pygame.K_RIGHT:
-                        """IMPORTANTE REVISAR"""
-                        self.sonidoPaso.play()
                         self.personaje.mueveDerecha()
                     elif evento.key == pygame.K_LEFT:
-                        self.sonidoPaso.play()
                         self.personaje.mueveIzquierda()
                     elif evento.key == pygame.K_UP:
                         self.personaje.salta()
@@ -264,7 +261,6 @@ class Partida:
 
         herido = self.personaje.colisiona(pantalla.obtenEnemigos() )
         if herido:
-            self.sonidoDanyoPincho.play()
             self.personaje.modificaEnergia(-5)
             if self.personaje.obtenPorcentajeEnergia() <= 0:
                 self.finPartida = True
@@ -579,9 +575,6 @@ class Pantalla:
         pathFondo = tools.obtenPathDeRecurso(directorio, "fondo.png")
         self.fondo = pygame.image.load(pathFondo)
 
-
-    #FIN
-
     def obtenEnemigos(self):
         grupoEnemigos = pygame.sprite.Group(self.enemigosEstaticos)
 
@@ -589,7 +582,6 @@ class Pantalla:
             grupoEnemigos.add(personajeControlado.obtenDibujo())
 
         return grupoEnemigos
-
 
     def personajeEnSalidaDerecha(self, personaje):
         chocado = False
@@ -615,10 +607,8 @@ class Pantalla:
         if self.objetoVictoria!= None:
             self.objetoVictoria.draw(pygame.display.get_surface())
 
-
     def obtenLosetas(self):
         return self.losetas
-
 
     def obtenEntradaIzquierda(self):
         x = self.salidaIzquierda.rect.x + (self.anchoLoseta + 50)
@@ -641,15 +631,14 @@ class Pantalla:
             self.objetoVictoria.update()
 
     def obtenObjetoVictoria(self):
-
         return self.objetoVictoria
-
 
 
 class SalidaPantalla(pygame.sprite.Sprite):
     def __init__(self, x, y, ancho, alto):
         pygame.sprite.Sprite.__init__(self)
         self.rect = pygame.Rect(x, y, ancho, alto)
+
 
 class Mapa:
     def __init__(self):
@@ -684,6 +673,7 @@ class Mapa:
 
     def obtenPantalla(self):
         return self.pantalla
+
 
 class Personaje:
 
@@ -721,7 +711,7 @@ class Personaje:
  #      directorio = tools.obtenPathDeRecurso(directorio, elemento)
         directorio = tools.obtenPathDeRecurso("sonidos", "personaje")
         rutaSonidoPaso = tools.obtenPathDeRecurso(directorio, "pasos.wav")
-        self.sonidoPaso = pygame.mixer.Sound()
+        self.sonidoPaso = pygame.mixer.Sound(rutaSonidoPaso)
 
     def colisiona(self, grupo):
         colisiones = self.motorColisiones.detectaSpriteConGrupo(self.dibujo, grupo)
@@ -736,8 +726,6 @@ class Personaje:
 
     def obtenDibujo(self):
         return self.dibujo
-
-
 
     def mueveDerecha(self):
         self.estado = Personaje.E_CAMINANDO
@@ -795,6 +783,7 @@ class Personaje:
 
     def _ejecutaCaminando(self):
         self.dibujo = self.animacionCaminar
+        Juego.motorDeSonido.anyadirSonido(self.sonidoPaso)
         if self.orientacion == Personaje.O_DERECHA:
             self._usaDibujosOriginales()
             self.x += Personaje.C_AVANCE
@@ -835,6 +824,7 @@ class Personaje:
     def obtenPorcentajeEnergia(self):
         return self.energia / Personaje.C_ENERGIA_MAXIMA
 
+
 class PersonajeControlado(Personaje):
     def __init__(self, xInicial, yInicial, xFinal, mecanismo):
         Personaje.__init__(self, xInicial, yInicial, tools.obtenPathDeRecurso(tools.obtenPathDeRecurso("animaciones", "enemigos"), "guerrero") )
@@ -842,19 +832,20 @@ class PersonajeControlado(Personaje):
         self.limiteDerecho = xFinal
         mecanismo.registra(self)
 
-
     def obtenLimiteIzquierdo(self):
         return self.limiteIzquierdo
 
-
     def obtenLimiteDerecho(self):
         return self.limiteDerecho
+
 
 class MotorDeSonido():
     def __init__(self):
        self.listaSonido = []
 
-
-
     def anyadirSonido(self, sonido):
         self.listaSonido.append(sonido)
+
+    def playSonidos(self):
+        for sonido in self.listaSonido:
+            sonido.play()
