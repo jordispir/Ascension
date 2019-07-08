@@ -1,5 +1,5 @@
-import pygame
 import tools
+import pygame
 import os
 
 class SpriteAnimado(pygame.sprite.Sprite):
@@ -160,9 +160,17 @@ class Menu:
         rutaFondo = tools.obtenPathDeRecurso ("menu", "fondoDefinitivo.jpg") 
         self.imagenFondo = pygame.image.load(rutaFondo)
 
+        #sonidoMenu
         directorio= tools.obtenPathDeRecurso("sonidos", "menu")
-        rutaSonido= tools.obtenPathDeRecurso(directorio, "SonidoEspada.wav")
-        self.sonido = pygame.mixer.Sound(rutaSonido)
+
+        rutaSonidoOpcion= tools.obtenPathDeRecurso(directorio, "SonidoEspada.wav")
+        rutaMusicaMenu= tools.obtenPathDeRecurso(directorio, "MusicaMenu.wav")
+
+        self.sonidoOpcion = pygame.mixer.Sound(rutaSonidoOpcion)
+        self.MusicaMenu = pygame.mixer.Sound(rutaMusicaMenu)
+
+    def sonidoMenu(self):
+       self.MusicaMenu.play()
 
     def gestionaEventos (self, eventos):
         for evento in eventos:
@@ -170,12 +178,12 @@ class Menu:
                 self.opcionElegida = Menu.O_SALIR
             elif evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_UP:
-                    self.sonido.play()
+                    self.sonidoOpcion.play()
                     self.seleccion -= 1
                     if self.seleccion == 0:
                         self.seleccion = Menu.O_SALIR
                 elif evento.key == pygame.K_DOWN:
-                    self.sonido.play()
+                    self.sonidoOpcion.play()
                     self.seleccion += 1
                     if self.seleccion > Menu.O_SALIR:
                         self.seleccion = Menu.O_PARTIDA_NUEVA
@@ -213,6 +221,11 @@ class Partida:
         self.personaje = Personaje(90, 220, "personaje")
         self.barraEnergia = BarraEnergia()
         self.victoria = False
+        directorio= tools.obtenPathDeRecurso("sonidos", "partida")
+        rutaSonidoPaso= tools.obtenPathDeRecurso(directorio, "paso.wav")
+        rutaSonidoPincho = tools.obtenPathDeRecurso(directorio, "dañoPincho.wav")
+        self.sonidoPaso = pygame.mixer.Sound(rutaSonidoPaso)
+        self.sonidoDanyoPincho = pygame.mixer.Sound(rutaSonidoPincho)
 
     def esVictoria(self):
         return self.victoria
@@ -225,12 +238,18 @@ class Partida:
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_ESCAPE:
                     self.finPartida = True
-                elif evento.key == pygame.K_RIGHT:
-                    self.personaje.mueveDerecha()
-                elif evento.key == pygame.K_LEFT:
-                    self.personaje.mueveIzquierda()
-                elif evento.key == pygame.K_UP:
-                    self.personaje.salta()
+
+                else:
+
+                    if evento.key == pygame.K_RIGHT:
+                        """IMPORTANTE REVISAR"""
+                        self.sonidoPaso.play()
+                        self.personaje.mueveDerecha()
+                    elif evento.key == pygame.K_LEFT:
+                        self.sonidoPaso.play()
+                        self.personaje.mueveIzquierda()
+                    elif evento.key == pygame.K_UP:
+                        self.personaje.salta()
                 
             if evento.type == pygame.KEYUP:
                 if evento.key == pygame.K_RIGHT:
@@ -245,6 +264,7 @@ class Partida:
 
         herido = self.personaje.colisiona(pantalla.obtenEnemigos() )
         if herido:
+            self.sonidoDanyoPincho.play()
             self.personaje.modificaEnergia(-5)
             if self.personaje.obtenPorcentajeEnergia() <= 0:
                 self.finPartida = True
@@ -838,4 +858,3 @@ class MotorDeSonido():
 
     def anyadirSonido(self, sonido):
         self.listaSonido.append(sonido)
-
