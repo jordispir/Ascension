@@ -1,0 +1,5 @@
+·Se han añadido sonidos de pasos (no convence)
+
+·El sonido de peta ya que el daño al personaje es continuamente, solucionar repetición de sonido.
+
+·tools.py SE TIENE QUE AÑADIR --> La otra opción sería añadirlo en una clase.

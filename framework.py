@@ -1,6 +1,7 @@
 import tools
 import pygame
 import os
+import random
 
 class SpriteAnimado(pygame.sprite.Sprite):
     def __init__(self, directorio, xInicial, yInicial, velocidad):
@@ -223,7 +224,7 @@ class Partida:
         self.ventana = ventana
         self.finPartida = False
         self.mapa = Mapa()
-        self.personaje = Personaje(90, 220, "personaje")
+        self.personaje = Heroe(90, 220, "personaje")
         self.barraEnergia = BarraEnergia()
         self.victoria = False
 
@@ -405,6 +406,7 @@ class MecanismoCaminante(MecanismoDeControl):
             else:
                 elemento.mueveDerecha()
 
+
 class PantallaResultado:
     def __init__(self):
         self.finaliza = False
@@ -523,6 +525,7 @@ class Pantalla:
                 loseta  = Loseta(xLoseta, yLoseta, imagenSuelo)
                 self.losetas.add(loseta)
                 xLoseta += self.anchoLoseta
+
             elif caracter == "+":
                 self.salidaDerecha = SalidaPantalla(xLoseta, yLoseta, self.anchoLoseta, altoLoseta)
                 xLoseta += self.anchoLoseta
@@ -688,7 +691,6 @@ class Personaje:
 
     C_SALTO = -40
 
-    C_ENERGIA_MAXIMA = 2000.0
 
     def __init__(self, xInicial, yInicial, animacion):
         self.x = xInicial
@@ -707,22 +709,10 @@ class Personaje:
         self.animacionParado = SpriteAnimadoOrientable(rutaParado, xInicial, yInicial, 60)
         self.dibujo = self.animacionParado
         self.orientacion = Personaje.O_DERECHA
-        self.energia = Personaje.C_ENERGIA_MAXIMA
- #      directorio = tools.obtenPathDeRecurso(directorio, elemento)
-        directorio = tools.obtenPathDeRecurso("sonidos", "personaje")
-        rutaSonidoPaso = tools.obtenPathDeRecurso(directorio, "pasos.wav")
-        self.sonidoPaso = pygame.mixer.Sound(rutaSonidoPaso)
 
     def colisiona(self, grupo):
         colisiones = self.motorColisiones.detectaSpriteConGrupo(self.dibujo, grupo)
         return len(colisiones) > 0
-
-    def modificaEnergia(self, cambio):
-        self.energia += cambio
-        if self.energia < 0:
-            self.energia = 0
-        elif self.energia > Personaje.C_ENERGIA_MAXIMA:
-            self.energia = Personaje.C_ENERGIA_MAXIMA
 
     def obtenDibujo(self):
         return self.dibujo
@@ -783,7 +773,6 @@ class Personaje:
 
     def _ejecutaCaminando(self):
         self.dibujo = self.animacionCaminar
-        Juego.motorDeSonido.anyadirSonido(self.sonidoPaso)
         if self.orientacion == Personaje.O_DERECHA:
             self._usaDibujosOriginales()
             self.x += Personaje.C_AVANCE
@@ -800,6 +789,8 @@ class Personaje:
         self.animacionCaminar._usaDibujosReflejados()
         self.animacionSaltar._usaDibujosReflejados()
         self.animacionParado._usaDibujosReflejados()
+
+
 
     def _ejecutaSaltando(self):
         self.dibujo = self.animacionSaltar
@@ -821,8 +812,36 @@ class Personaje:
         self.y = y
         self.dibujo.cambiaPosicion(self.x, self.y)
 
+
+class Heroe(Personaje):
+
+    C_ENERGIA_MAXIMA = 2000.0
+
+    def __init__(self, xInicial, yInicial, xFinal):
+        Personaje.__init__(self, xInicial, yInicial, "personaje")
+        self.energia = Heroe.C_ENERGIA_MAXIMA
+        #directorio = tools.obtenPathDeRecurso(directorio, elemento)
+        directorio = tools.obtenPathDeRecurso("sonidos", "personaje")
+        rutaSonidoPaso = tools.obtenPathDeRecurso(directorio, "pasos.wav")
+        self.sonidoPaso = pygame.mixer.Sound(rutaSonidoPaso)
+        directorio = tools.obtenPathDeRecurso("sonidos", "partida")
+        rutaSonidoPaso = tools.obtenPathDeRecurso(directorio, "paso.wav")
+        self.sonidoPaso2 = pygame.mixer.Sound(rutaSonidoPaso)
+
+    def modificaEnergia(self, cambio):
+        self.energia += cambio
+        if self.energia < 0:
+            self.energia = 0
+        elif self.energia > Heroe.C_ENERGIA_MAXIMA:
+            self.energia = Heroe.C_ENERGIA_MAXIMA
+
     def obtenPorcentajeEnergia(self):
-        return self.energia / Personaje.C_ENERGIA_MAXIMA
+        return self.energia / Heroe.C_ENERGIA_MAXIMA
+
+    def _ejecutaCaminando(self):
+        super()._ejecutaCaminando()
+        Juego.motorDeSonido.anyadirSonido(self.sonidoPaso)
+        Juego.motorDeSonido.anyadirSonido(self.sonidoPaso2)
 
 
 class PersonajeControlado(Personaje):
@@ -841,11 +860,23 @@ class PersonajeControlado(Personaje):
 
 class MotorDeSonido():
     def __init__(self):
-       self.listaSonido = []
+        self.listaSonido = []
+        self.canal = {}
 
     def anyadirSonido(self, sonido):
         self.listaSonido.append(sonido)
 
     def playSonidos(self):
         for sonido in self.listaSonido:
-            sonido.play()
+            if not self._estaSonando(sonido):
+                self.canal[sonido] = sonido.play()
+
+        #Actualizar sonidos y liberar espacio
+        self.listaSonido = []
+
+    def _estaSonando(self, sonido):
+        resultado = False
+        if sonido in self.canal.keys():
+            if self.canal[sonido].get_busy():
+                resultado = True
+        return resultado
